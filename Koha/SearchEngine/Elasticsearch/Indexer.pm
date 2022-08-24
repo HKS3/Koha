@@ -117,10 +117,12 @@ sub update_index {
     }
 
     my $documents = $self->marc_records_to_documents($records);
+
     my @body;
     for (my $i = 0; $i < scalar @$index_record_ids; $i++) {
         my $id = $index_record_ids->[$i];
         my $document = $documents->[$i];
+$document->{geolocation}={lat=>48.3,lon=>13.5};
         push @body, {
             index => {
                 _id => "$id"
@@ -266,7 +268,8 @@ sub update_mappings {
     my ($self) = @_;
     my $elasticsearch = $self->get_elasticsearch();
     my $mappings = $self->get_elasticsearch_mappings();
-
+    use Data::Dumper; $Data::Dumper::Maxdepth=3;$Data::Dumper::Sortkeys=1;warn Data::Dumper::Dumper $mappings;
+    $mappings->{properties}{geolocation} = {type=>'geo_point'};
     try {
         my $response = $elasticsearch->indices->put_mapping(
             index => $self->index_name,
