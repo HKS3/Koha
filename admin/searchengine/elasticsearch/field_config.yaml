@@ -38,6 +38,8 @@ search:
         search_analyzer: analyzer_phrase
       raw:
         type: keyword
+  geo_point:
+     type: geo_point
   default:
     type: text
     analyzer: analyzer_standard

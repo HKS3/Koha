@@ -211,6 +211,12 @@ sub get_elasticsearch_mappings {
                     $es_type = 'year';
                 } elsif ($type eq 'callnumber') {
                     $es_type = 'cn_sort';
+                } elsif ($type eq 'geo_point') {
+                    $es_type = 'geo_point';
+                }
+
+                if ($type eq 'geo_point') {
+                    $name =~ s/_(lat|lon)$//;
                 }
 
                 if ($search) {
@@ -728,6 +734,14 @@ sub marc_records_to_documents {
             }
         }
 
+        foreach my $field (@{$rules->{geo_point}}) {
+            my $geofield = $field;
+            $geofield =~ s/_(lat|lon)$//;
+            my $axis = $1;
+            $record_document->{$geofield}->{$axis} = $record_document->{$field}[0];
+            delete $record_document->{$field};
+        }
+
         # Remove duplicate values and collapse sort fields
         foreach my $field (keys %{$record_document}) {
             if (ref($record_document->{$field}) eq 'ARRAY') {
@@ -1033,6 +1047,9 @@ sub _get_marc_mapping_rules {
         }
         elsif ($type eq 'isbn') {
             push @{$rules->{isbn}}, $name;
+        }
+        elsif ($type eq 'geo_point') {
+            push @{$rules->{geo_point}}, $name;
         }
         elsif ($type eq 'boolean') {
             # boolean gets special handling, if value doesn't exist for a field,

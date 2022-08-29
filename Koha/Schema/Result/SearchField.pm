@@ -109,6 +109,7 @@ __PACKAGE__->add_columns(
         "stdno",
         "year",
         "callnumber",
+        "geo_point",
       ],
     },
     is_nullable => 0,

@@ -122,7 +122,6 @@ sub update_index {
     for (my $i = 0; $i < scalar @$index_record_ids; $i++) {
         my $id = $index_record_ids->[$i];
         my $document = $documents->[$i];
-$document->{geolocation}={lat=>48.3,lon=>13.5};
         push @body, {
             index => {
                 _id => "$id"
