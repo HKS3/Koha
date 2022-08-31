@@ -739,7 +739,7 @@ sub marc_records_to_documents {
             my $geofield = $field;
             $geofield =~ s/_(lat|lon)$//;
             my $axis = $1;
-            my $vals = $record_document->{$field}; # TODO for now we only handle the first location, MultiPoint will come later
+            my $vals = $record_document->{$field};
             for my $i (0 .. @$vals - 1) {
                 my $val = $record_document->{$field}[$i];
                 $record_document->{$geofield}[$i]{$axis} = $val;
