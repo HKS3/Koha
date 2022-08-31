@@ -735,10 +735,15 @@ sub marc_records_to_documents {
         }
 
         foreach my $field (@{$rules->{geo_point}}) {
+            next unless $record_document->{$field};
             my $geofield = $field;
             $geofield =~ s/_(lat|lon)$//;
             my $axis = $1;
-            $record_document->{$geofield}->{$axis} = $record_document->{$field}[0];
+            my $vals = $record_document->{$field}; # TODO for now we only handle the first location, MultiPoint will come later
+            for my $i (0 .. @$vals - 1) {
+                my $val = $record_document->{$field}[$i];
+                $record_document->{$geofield}[$i]{$axis} = $val;
+            }
             delete $record_document->{$field};
         }
 
