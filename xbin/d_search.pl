@@ -32,7 +32,7 @@ use Koha::SearchEngine::QueryBuilder;
 use Data::Dumper;
 my $records =  get_marc_components(1);
 
-printf ("%s\n", $records->[0]->field('245')->subfield("a"));
+printf ("%s\n", $records->[0]->field('245')->subfield("a")) if $records->[0];
 
 sub get_marc_components {
     my ($max_results) = @_;
@@ -70,16 +70,25 @@ sub get_components_query {
     my $sort = $component_sort_field . "_" . $component_sort_order;
 
     my $searchstr;
-    my $cleaned_title = "perl";
+    my $cleaned_title;
+    $cleaned_title = "perl";
+    $cleaned_title = "perl";
+    $cleaned_title = "name-geographic:wien perl";
+    # $cleaned_title = "bla:wien";
+    # $cleaned_title = "lat:48.3 lng:14.1 distance:120km";
+    # $cleaned_title = "control-number:17259930";
     $cleaned_title =~ tr|/||;
     $cleaned_title = $builder->clean_search_term($cleaned_title);
     $searchstr = "$cleaned_title";
    
+    #my ($error, $query_str) = $builder->build_query_compat( undef, [$searchstr, 'perl'], ['geolocation', undef], undef, [$sort], 0 );
+    # my ($error, $query_str) = $builder->build_query_compat( undef, ['-2019'], ['yr,st-year'] );
     my ($error, $query_str) = $builder->build_query_compat( undef, [$searchstr], undef, undef, [$sort], 0 );
     if( $error ){
         warn $error;
         return;
     }
+    # print Dumper $query_str;
     return ($query_str, $sort);
 }
 
