@@ -30,9 +30,11 @@ use Koha::SearchEngine::QueryBuilder;
 
 
 use Data::Dumper;
-my $records =  get_marc_components(1);
+my $records =  get_marc_components(10);
 
-printf ("%s\n", $records->[0]->field('245')->subfield("a")) if $records->[0];
+for my $r (@$records) {
+  printf ("%s\n", $r->field('245')->subfield("a"));
+}
 
 sub get_marc_components {
     my ($max_results) = @_;
@@ -72,8 +74,8 @@ sub get_components_query {
     my $searchstr;
     my $cleaned_title;
     $cleaned_title = "perl";
-    $cleaned_title = "perl";
-    $cleaned_title = "name-geographic:wien perl";
+    # $cleaned_title = "perl";
+    # $cleaned_title = "name-geographic:wien perl";
     # $cleaned_title = "bla:wien";
     # $cleaned_title = "lat:48.3 lng:14.1 distance:120km";
     # $cleaned_title = "control-number:17259930";
@@ -81,7 +83,8 @@ sub get_components_query {
     $cleaned_title = $builder->clean_search_term($cleaned_title);
     $searchstr = "$cleaned_title";
    
-    #my ($error, $query_str) = $builder->build_query_compat( undef, [$searchstr, 'perl'], ['geolocation', undef], undef, [$sort], 0 );
+   # my ($error, $query_str) = $builder->build_query_compat( undef, [$searchstr, 'perl'], ['geolocation',], undef, [$sort], 0 );
+     # my ($error, $query_str) = $builder->build_query_compat( undef, [$searchstr, ], ['geolocation',], undef, [$sort], 0 );
     # my ($error, $query_str) = $builder->build_query_compat( undef, ['-2019'], ['yr,st-year'] );
     my ($error, $query_str) = $builder->build_query_compat( undef, [$searchstr], undef, undef, [$sort], 0 );
     if( $error ){
@@ -94,3 +97,7 @@ sub get_components_query {
 
 
 1;
+
+__END__
+
+http://kohadev.mydnsname.org:8080/cgi-bin/koha/opac-search.pl?advsearch=1&weight_search=1&sort_by=relevance&limit-yr=1999-&do=Search

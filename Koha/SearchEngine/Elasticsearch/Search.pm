@@ -91,6 +91,11 @@ sub search {
         $query->{from} = $page * $query->{size};
     }
     my $elasticsearch = $self->get_elasticsearch();
+
+    # XXX investigate where empty query_string is coming from
+    delete $query->{query}->{query_string} if
+      $query->{query}->{query_string} && !%{$query->{query}->{query_string}};
+
     my $results = eval {
         $elasticsearch->search(
             index => $self->index_name,
