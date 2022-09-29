@@ -224,6 +224,11 @@ a.add, a.delete {
                                     [% ELSE %]
                                         <option value="callnumber">Call Number</option>
                                     [% END %]
+                                    [% IF search_field.type == "geo_point" %]
+                                        <option value="geo_point" selected="selected">Geo Point</option>
+                                    [% ELSE %]
+                                        <option value="geo_point">Geo Point</option>
+                                    [% END %]
                                     </select>
                             </td>
                                 <td data-order="[% search_field.weight | html %]">
