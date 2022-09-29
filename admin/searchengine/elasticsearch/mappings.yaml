@@ -1546,6 +1546,24 @@ biblios:
         sort: ~
         suggestible: ''
     type: ''
+  geolocation_lat:
+    label: geolocation_lat
+    mappings:
+      - facet: ''
+        marc_field: 034s
+        marc_type: marc21
+        sort: 0
+        suggestible: ''
+    type: geo_point
+  geolocation_lon:
+    label: geolocation_lon
+    mappings:
+      - facet: ''
+        marc_field: 034t
+        marc_type: marc21
+        sort: 0
+        suggestible: ''
+    type: geo_point
   holdingbranch:
     facet_order: 8
     label: holdinglibrary
