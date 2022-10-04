@@ -77,16 +77,16 @@ sub get_components_query {
     # $cleaned_title = "perl";
     # $cleaned_title = "name-geographic:wien perl";
     # $cleaned_title = "bla:wien";
-    # $cleaned_title = "lat:48.3 lng:14.1 distance:120km";
+     $cleaned_title = "lat:48.3 lng:14.1 distance:120km";
     # $cleaned_title = "control-number:17259930";
     $cleaned_title =~ tr|/||;
     $cleaned_title = $builder->clean_search_term($cleaned_title);
     $searchstr = "$cleaned_title";
    
    # my ($error, $query_str) = $builder->build_query_compat( undef, [$searchstr, 'perl'], ['geolocation',], undef, [$sort], 0 );
-     # my ($error, $query_str) = $builder->build_query_compat( undef, [$searchstr, ], ['geolocation',], undef, [$sort], 0 );
+    my ($error, $query_str) = $builder->build_query_compat( undef, [$searchstr, ], ['geolocation',], undef, [$sort], 0 );
     # my ($error, $query_str) = $builder->build_query_compat( undef, ['-2019'], ['yr,st-year'] );
-    my ($error, $query_str) = $builder->build_query_compat( undef, [$searchstr], undef, undef, [$sort], 0 );
+    # my ($error, $query_str) = $builder->build_query_compat( undef, [$searchstr], undef, undef, [$sort], 0 );
     if( $error ){
         warn $error;
         return;
@@ -101,3 +101,5 @@ sub get_components_query {
 __END__
 
 http://kohadev.mydnsname.org:8080/cgi-bin/koha/opac-search.pl?advsearch=1&weight_search=1&sort_by=relevance&limit-yr=1999-&do=Search
+
+http://kohadev.mydnsname.org:8080/cgi-bin/koha/opac-search.pl?advsearch=1&idx=geolocation&q=lat:48.3+lng:14.1+distance:120km&weight_search=1&do=Search&sort_by=relevance
