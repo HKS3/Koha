@@ -106,7 +106,9 @@ my $format = $cgi->param("format") || '';
 if ($format =~ /(rss|atom|opensearchdescription)/) {
     $template_name = 'opac-opensearch.tt';
 }
-elsif ((@params>=1) || (defined $cgi->param("q") && $cgi->param("q") ne "") || ($cgi->param('multibranchlimit')) || ($cgi->param('limit-yr')) || @searchCategories ) {
+elsif ((@params>=1) || (defined $cgi->param("q") && $cgi->param("q") ne "") ||
+      ($cgi->param('multibranchlimit')) || ($cgi->param('limit-yr')) || @searchCategories
+      || $cgi->param('lat') ){
     $template_name = 'opac-results.tt';
 }
 else {
@@ -402,8 +404,22 @@ my @operators = $cgi->multi_param('op');
 
 # indexes are query qualifiers, like 'title', 'author', etc. They
 # can be single or multiple parameters separated by comma: kw,right-Truncation 
+
+if ($params->{'lat'} && $params->{'lng'} && $params->{'distance'} ) {
+    $params->{q}   = sprintf("lat:%s lng:%s distance:%s",
+          $params->{'lat'}, $params->{'lng'}, $params->{'distance'});
+
+    $params->{idx} = 'geolocation';
+    delete $params->{'lat'};
+    delete $params->{'lng'};
+    delete $params->{'radius'};
+}
+
+
+
 my @indexes = $cgi->multi_param('idx');
-@indexes = map { uri_unescape($_) } @indexes;
+@indexes = grep { $_ } @indexes;
+@indexes = map {  uri_unescape($_) } @indexes;
 
 # if a simple index (only one)  display the index used in the top search box
 if ($indexes[0] && !$indexes[1]) {
@@ -457,7 +473,6 @@ foreach my $limit(@limits) {
 }
 $template->param(available => $available);
 
-# append year limits if they exist
 if ($params->{'limit-yr'}) {
     if ($params->{'limit-yr'} =~ /\d{4}/) {
         push @limits, "yr,st-numeric=$params->{'limit-yr'}";

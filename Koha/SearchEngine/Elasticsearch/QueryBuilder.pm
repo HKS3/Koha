@@ -916,7 +916,7 @@ sub _create_query_string {
             push(@$es_searches, $q);
         }
     }
-    @queries = grep { ! $_->{field} || $_->{field} ne 'geolocation' } @queries;
+    @queries = grep { $_->{field} ne 'geolocation' } @queries;
 
     map {
         my $otor  = $_->{operator} ? $_->{operator} . ' ' : '';
