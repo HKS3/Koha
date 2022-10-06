@@ -49,8 +49,6 @@ use C4::Context;
 use Koha::Exceptions;
 use Koha::Caches;
 
-my $es_searches = [];
-
 our %index_field_convert = (
     'kw' => '',
     'ab' => 'abstract',
@@ -138,6 +136,7 @@ our %index_field_convert = (
 );
 my $field_name_pattern = '[\w\-]+';
 my $multi_field_pattern = "(?:\\.$field_name_pattern)*";
+my $es_advanced_searches = [];
 
 =head2 get_index_field_convert
 
@@ -247,7 +246,7 @@ sub build_query {
         $res->{aggregations}{holdingbranch} = { terms => { field => "holdingbranch__facet", size => $size } };
     }
 
-    $res = _rebuild2es_advanced_query($res) if @$es_searches ;
+    $res = _rebuild_to_es_advanced_query($res) if @$es_advanced_searches ;
     return $res;
 }
 
@@ -913,7 +912,7 @@ sub _create_query_string {
     my ( $self, @queries ) = @_;
     foreach my $q (@queries) {
         if ($q->{field} && $q->{field} eq 'geolocation') {
-            push(@$es_searches, $q);
+            push(@$es_advanced_searches, $q);
         }
     }
     @queries = grep { $_->{field} ne 'geolocation' } @queries;
@@ -1299,28 +1298,38 @@ sub _search_fields {
     }
 }
 
-sub _rebuild2es_advanced_query {
+sub _rebuild_to_es_advanced_query {
     my ($res) = @_;
     my $query_string = $res->{query}->{query_string};
     $query_string->{query} = '*' unless $query_string->{query};
     delete $res->{query}->{query_string};
-    my ($lat, $lon, $distance) = map { $_ =~ /:(.*)\*/ } split('\s+', $es_searches->[0]->{operand});
+
+    my %filter;
+    for my $advanced_query (@$es_advanced_searches) {
+        if ( $advanced_query->{field} eq 'geolocation') {
+            my ($lat, $lon, $distance) = map { $_ =~ /:(.*)\*/ } split('\s+', $advanced_query->{operand});
+            $filter{geo_distance} = {
+                distance => $distance,
+                geolocation => {
+                    lat => $lat,
+                    lon => $lon,
+                }
+            };
+        }
+        else {
+            warn "unknown advanced ElasticSearch query: ".join(', ',%$advanced_query);
+        }
+    }
+
     $res->{query} = {
         bool => {
              must => {
                  query_string =>  $query_string
              },
-             filter => {
-                geo_distance => {
-                    "distance" => $distance,
-                     geolocation => {
-                        lat => $lat,
-                        lon => $lon,
-                     }
-                }
-             }
+             filter => \%filter,
         }
     };
+
     return $res;
 }
 
