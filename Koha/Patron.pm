@@ -115,20 +115,37 @@ Autogenerate next cardnumber from highest value found in database
 
 =cut
 
+## sub fixup_cardnumber {
+##     my ( $self ) = @_;
+## 
+##     my $max = $self->cardnumber;
+##     Koha::Plugins->call( 'patron_barcode_transform', \$max );
+## 
+##     $max ||= Koha::Patrons->search({
+##         cardnumber => {-regexp => '^-?[0-9]+$'}
+##     }, {
+##         select => \'CAST(cardnumber AS SIGNED)',
+##         as => ['cast_cardnumber']
+##     })->_resultset->get_column('cast_cardnumber')->max;
+##     $self->cardnumber(($max || 0) +1);
+## }
+
 sub fixup_cardnumber {
     my ( $self ) = @_;
-
-    my $max = $self->cardnumber;
-    Koha::Plugins->call( 'patron_barcode_transform', \$max );
-
-    $max ||= Koha::Patrons->search({
-        cardnumber => {-regexp => '^-?[0-9]+$'}
+    my $max = Koha::Patrons->search({
+        cardnumber => {-like => 'LB%', '<' => 'LB090000'}
     }, {
-        select => \'CAST(cardnumber AS SIGNED)',
+        select => \'CAST(substring(cardnumber,3) AS SIGNED)',
         as => ['cast_cardnumber']
     })->_resultset->get_column('cast_cardnumber')->max;
     $self->cardnumber(($max || 0) +1);
+    $self->cardnumber( sprintf("LB%07d",  $self->cardnumber));
+    open (FH, '>>/tmp/log');
+    print FH $self->categorycode;
+    close FH; 
 }
+
+
 
 =head3 trim_whitespace
 
