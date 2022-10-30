@@ -1,0 +1,48 @@
+<xsl:stylesheet
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:marc="http://www.loc.gov/MARC21/slim"
+  version="1.0">
+
+  <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
+  <xsl:strip-space elements="*"/>
+
+  <xsl:template match="marc:controlfield[@tag=001]"/>
+
+  <xsl:template match="marc:datafield[@tag=015]"/>
+  <xsl:template match="marc:datafield[@tag=090]"/>
+  <xsl:template match="marc:datafield[@tag=653]"/>
+  <xsl:template match="marc:datafield[@tag=850]"/>
+  <xsl:template match="marc:datafield[@tag=700]/marc:subfield[@code='d']"/>
+  <xsl:template match="marc:datafield[@tag=440]/marc:subfield[@code='w']"/>
+  <xsl:template match="marc:datafield[@tag=760]/marc:subfield[@code='w']"/>
+  <xsl:template match="marc:datafield[@tag=762]/marc:subfield[@code='w']"/>
+  <xsl:template match="marc:datafield[@tag=765]/marc:subfield[@code='w']"/>
+  <xsl:template match="marc:datafield[@tag=767]/marc:subfield[@code='w']"/>
+  <xsl:template match="marc:datafield[@tag=770]/marc:subfield[@code='w']"/>
+  <xsl:template match="marc:datafield[@tag=772]/marc:subfield[@code='w']"/>
+  <xsl:template match="marc:datafield[@tag=773]/marc:subfield[@code='w']"/>
+  <xsl:template match="marc:datafield[@tag=774]/marc:subfield[@code='w']"/>
+  <xsl:template match="marc:datafield[@tag=775]/marc:subfield[@code='w']"/>
+  <xsl:template match="marc:datafield[@tag=776]/marc:subfield[@code='w']"/>
+  <xsl:template match="marc:datafield[@tag=777]/marc:subfield[@code='w']"/>
+  <xsl:template match="marc:datafield[@tag=780]/marc:subfield[@code='w']"/>
+  <xsl:template match="marc:datafield[@tag=785]/marc:subfield[@code='w']"/>
+  <xsl:template match="marc:datafield[@tag=786]/marc:subfield[@code='w']"/>
+  <xsl:template match="marc:datafield[@tag=787]/marc:subfield[@code='w']"/>
+  <xsl:template match="marc:datafield[@tag=800]/marc:subfield[@code='w']"/>
+  <xsl:template match="marc:datafield[@tag=810]/marc:subfield[@code='w']"/>
+  <xsl:template match="marc:datafield[@tag=811]/marc:subfield[@code='w']"/>
+  <xsl:template match="marc:datafield[@tag=830]/marc:subfield[@code='w']"/>
+  <xsl:template match="marc:datafield[@tag=856]/marc:subfield[@code='w']"/>
+
+  <xsl:template match="@* | node()">
+    <xsl:copy>
+      <xsl:apply-templates select="@* | node()"/>
+    </xsl:copy>
+  </xsl:template>
+
+  <xsl:template match="marc:controlfield[@tag=003]">
+    <marc:controlfield tag="003">AT-NMW</marc:controlfield>
+  </xsl:template>
+
+</xsl:stylesheet>

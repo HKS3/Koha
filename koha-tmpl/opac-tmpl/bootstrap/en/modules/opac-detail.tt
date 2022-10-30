@@ -1183,6 +1183,7 @@
                     <th id="item_shelving_location" data-colname="item_shelving_location" class="shelving_location">Shelving location</th>
                 [% END %]
                     <th id="item_callnumber" data-colname="item_callnumber" class="call_no">Call number</th>
+                    <th id="item_stocknumber" data-colname="item_stocknumber">Inventory number</th>
                 [% UNLESS TablesSettings.is_hidden( 'opac', 'biblio-detail', 'holdingst', 'item_materials') %]
                     <th id="item_materials" data-colname="item_materials" class="materials">Materials specified</th>
                 [% END %]
@@ -1315,6 +1316,8 @@
                         [% END %]
                     [% END %]
                 </td>
+
+                <td>[% ITEM_RESULT.stocknumber | html %]</td>
 
                 [% UNLESS TablesSettings.is_hidden( 'opac', 'biblio-detail', 'holdingst', 'item_materials') %]
                     <td class="materials">[% ITEM_RESULT.materials | html %]</td>

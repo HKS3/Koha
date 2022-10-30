@@ -1,0 +1,156 @@
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha</title>
+
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body id="cat_libelle_marc21_field_773_find_series.tt" class="cat" style="padding:1em;">
+
+<h3> Initial Search: [% result | html %] </h3>
+<input type="search" id="title_search" name="title_search" value="[% result | html %]">
+<button type="button" id="title_search_button" class="btn btn-default"><i class="fa fa-search"></i>Search</button>
+
+<form name="parent_form" id="parent_form" style="display:block" onsubmit="report()" action="">
+    <div id="toolbar">
+        <div class="btn-group">
+            <button type="submit" class="btn btn-default"><i class="fa fa-save"></i> Save</button>
+        </div>
+        <div class="btn-group">
+            <button type="button" class="btn btn-default close_window"><i class="fa fa-remove"></i> Cancel</button>
+        </div>
+    </div>
+
+<input type="hidden" name="plugin_name" value="libelle_marc21_field_773_find_series.pl" />
+<input type="hidden" id="[% index | html %]" name="index" value="[% index | html %]" />
+<input type="hidden" id="[% tag_w | html %]" name="tag_w" value="[% tag_w | html %]" />
+<input type="hidden" id="[% tag_t | html %]" name="tag_t" value="[% tag_t | html %]" />
+<input type="hidden" id="[% tag_x | html %]" name="tag_x" value="[% tag_x | html %]" />
+<input type="hidden" id="[% tag_t | html %]" name="tag_z" value="[% tag_z | html %]" />
+<input type="hidden" id="[% tag_245a | html %]" name="tag_245a" value="[% tag_245a | html %]" />
+<input type="hidden" id="[% tag_000 | html %]" name="tag_000" value="[% tag_000 | html %]" />
+<input type="hidden" name="result" id="result" value="[% result | html %]" />
+<fieldset>
+<table id="volumes_table" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>Select</th>
+                <th>Title</th>
+                <th>Data</th>
+                <th>Biblionumber</th>
+                <th>Controlnumber</th>
+                <th>ISBN</th>
+                <th>ISSN</th>
+            </tr>
+        </thead>
+</table>
+</fieldset>
+</form>
+
+[% MACRO jsinclude BLOCK %]
+    [% INCLUDE 'js_includes.inc' %]
+    [% INCLUDE 'datatables.inc' %]
+
+    <script type="text/javascript">
+
+        function report() {
+            var controlnumber;
+            var title;
+            var isbn;
+            var issn;
+            var i = 0;
+            var rn;
+            $("input[name='parent_radio']").each(function() {
+                if (this.checked) {
+                    controlnumber = this.value;
+                    title = this.title;
+                    rn = i;
+                }
+                i++;
+            });
+            i = 0;
+            $("#volumes_table > tbody > tr").each(function() {
+                var self = $(this);
+                if (rn == i) {
+                    title =  self.find("td:eq(1)").text().trim();
+                    controlnumber =  self.find("td:eq(4)").text().trim();
+                    isbn = self.find("td:eq(5)").text().trim();
+                    issn = self.find("td:eq(6)").text().trim();
+                    console.log(i + ' ' + isbn + ' ' + issn) ;
+                }
+                i++;
+            });
+
+            if (! controlnumber) {
+                self.close();
+                return false;
+            }
+
+            // console.log([% index | html %]);
+            // console.log([% tag_w | html %]);
+            // console.log([% tag_t | html %]);
+            var doc = opener.document;
+            var field = doc.getElementById("[% index | html %]");
+            field.value = title;
+            var tag_w = doc.getElementById("[% tag_w | html %]");
+            tag_w.value = controlnumber;
+            var tag_t = doc.getElementById("[% tag_t | html %]");
+            tag_t.value = title;
+
+            var tag_x = doc.getElementById("[% tag_x | html %]");
+            tag_x.value = issn;
+            var tag_z = doc.getElementById("[% tag_z | html %]");
+            tag_z.value = isbn;
+            var tag_245a = doc.getElementById("[% tag_245a | html %]");
+            tag_245a.value = title;
+
+            var tag_000 = doc.getElementById("[% tag_000 | html %]");
+            var leader = tag_000.value;
+            // console.log('val ' + leader);
+            // leader position 19 = c for "part with dependent title"
+            // tag_000.value = leader.substr(0,19) + 'c' + leader.substr(21,leader.length-1);
+
+            self.close();
+            return false;
+        }
+
+async function search_title() {
+    $(function(e) {
+           // var ajaxData = { 'title': '[% result %]' };
+            var ajaxData = { 'title': $('#title_search').val(), 'ignoreleader':1 };
+            $.ajax({
+              url: '/api/v1/contrib/subordinateitems/bytitle/',
+            type: 'GET',
+            dataType: 'json',
+            data: ajaxData,
+        })
+        .done(function(data) {
+            if (!  $.fn.DataTable.isDataTable( '#volumes_table' )) {
+                $('#volumes_table').DataTable( {
+                    "data":  data.data,
+                    "order": [],
+            } );
+            } else {
+                $('#volumes_table').DataTable().clear().rows.add(data.data).draw();
+            }
+        })
+        .error(function(data) {});
+        });
+}
+
+$( document ).ready(function() {
+    $(".close_window").on("click", function(e){
+       e.preventDefault();
+       window.close();
+    });
+
+    $('#title_search_button').click(function() {
+        search_title();
+    });
+
+    search_title();
+
+});
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' popup_window=1 %]
