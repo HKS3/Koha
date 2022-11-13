@@ -15003,3 +15003,9 @@ msgstr "×"
 
 #~ msgid "Copyright date:"
 #~ msgstr "Erscheinungsjahr:"
+
+#, c-format
+msgid "Author:"
+msgstr "VerfasserIn:"
+
+
