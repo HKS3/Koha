@@ -754,6 +754,7 @@
                                             <th>Library</th>
                                             <th>Fund</th>
                                             <th>Non-public note</th>
+                                            <th>Price</th>
                                             <th>Status</th>
                                             <th class="NoSort noExport">&nbsp;</th>
                                         </tr>
@@ -834,6 +835,9 @@
                                                 </td>
                                                 <td>
                                                     [% s.staff_note | html %]
+                                                </td>
+                                                <td>
+                                                    [% s.price | html %]
                                                 </td>
                                                 <td>
                                                     [% IF s.STATUS == 'ASKED' %]
