@@ -61,6 +61,7 @@ my $suggestion = {
     branchcode      => scalar $input->param('branchcode'),
     patronreason    => scalar $input->param('patronreason'),
     note            => scalar $input->param('note'),
+    price           => scalar $input->param('price'),
 };
 
 # If a spambot accidentally populates the 'negcap' field in the sugesstions form, then silently skip and return.
@@ -199,7 +200,7 @@ if ( $op eq "add_confirm" ) {
         $suggestion->{suggesteddate} = dt_from_string;
         $suggestion->{branchcode} = $input->param('branchcode') || C4::Context->userenv->{"branch"};
         $suggestion->{STATUS} = 'ASKED';
-
+        $suggestion->{price} =~ s/,/./;
         &NewSuggestion($suggestion);
         $patrons_pending_suggestions_count++;
         $patrons_total_suggestions_count++;

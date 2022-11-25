@@ -182,6 +182,10 @@
                                             </div>
                                             <br>
                                         [% END %]
+                                            <div class="form-group" id="opac-suggestion-price">
+                                                    <label for="price">Price:</label>
+                                                    <input type="text" id="price" name="price"  maxlength="10" size="10" value="[% price | html %]" class="form-control"/>
+                                            </div>
                                         [% UNLESS ( itemtype_hidden )%]
                                             <div class="form-group"> 
                                             <div class="form-control"> 
@@ -266,6 +270,7 @@
                                                 [% END %]
                                             </div>
                                         [% END %]
+
 
                                         <!--  Add a hidden 'negcap' field -->
                                         <li id="negcap" style="position: absolute; left: -2000px;">
